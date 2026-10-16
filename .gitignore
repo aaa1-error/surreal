@@ -116,3 +116,5 @@ InitTestScene*.unity*
 
 .vscode/
 .vsconfig/
+
+linux_build
