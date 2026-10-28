@@ -1,3 +1,4 @@
+using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -10,7 +11,7 @@ using UnityEngine.InputSystem;
 public class QuakeMovement : MonoBehaviour
 {
     private const float GroundProbeSkin = 0.01f;
-    private const float MinFrictionSpeed = 0.1f;
+    private const float MinFrictionSpeed = 0.01f;
     private const float CrouchSpeedMultiplier = 0.5f;
 
     [Header("Ground")]
@@ -32,10 +33,22 @@ public class QuakeMovement : MonoBehaviour
     [SerializeField] private float _jumpForce = 5f;
     [SerializeField] private float _jumpBufferTime = 0.1f;
 
+    [Header("Stairs")]
+    [Tooltip("Highest ledge the player steps onto automatically, in meters.")]
+    [SerializeField] private float _stepHeight = 0.3f;
+    [Tooltip("How far ahead of the capsule to look for a step, in meters.")]
+    [SerializeField] private float _stepProbeDistance = 0.1f;
+
+    [Header("Crouch")]
+    [Tooltip("Anchor at head height. Drops by the full height lost when crouching. Parent anything that should stay at head height (camera rig, weapons, audio listener) under it.")]
+    [SerializeField] private Transform _eyes;
+    [Tooltip("Anchor at the middle of the capsule. Drops by half the height lost. Parent anything that should stay at body center under it.")]
+    [SerializeField] private Transform _center;
+
     [Header("Ground detection")]
     [SerializeField] private LayerMask _groundLayers = ~0;
     [SerializeField] private float _slopeLimit = 45f;
-    [SerializeField] private float _groundCheckDistance = 0.01f;
+    [SerializeField] private float _groundCheckDistance = 0.05f;
 
     [Header("References")]
     [SerializeField] private GameObject _cameraObject;
@@ -47,6 +60,7 @@ public class QuakeMovement : MonoBehaviour
     [SerializeField] private bool _isGrounded;
     [SerializeField] private float _slopeAngle;
     [SerializeField] private bool _isCrouched;
+    [SerializeField] private float _speed;
 
     private CapsuleCollider _collider;
     private Rigidbody _rigidBody;
@@ -54,6 +68,11 @@ public class QuakeMovement : MonoBehaviour
     private float _standingHeight;
     private Vector3 _standingCenter;
     private float _lastJumpPressTime = float.NegativeInfinity;
+
+    private bool _crouchHeld;
+    private Vector3 _standingCenterMarkerLocal;
+    private Vector3 _standingEyesLocal;
+    private readonly Collider[] _standUpBuffer = new Collider[16];
 
     // ---------------------------------------------------------------- Public API
 
@@ -86,6 +105,12 @@ public class QuakeMovement : MonoBehaviour
 
         _standingHeight = _collider.height;
         _standingCenter = _collider.center;
+
+        if (_eyes != null)
+            _standingEyesLocal = _eyes.localPosition;
+
+        if (_center != null)
+            _standingCenterMarkerLocal = _center.localPosition;
     }
 
     private void Start()
@@ -103,6 +128,7 @@ public class QuakeMovement : MonoBehaviour
     {
         _crouch.action.performed -= OnCrouchPerformed;
         _crouch.action.canceled -= OnCrouchCanceled;
+        _crouchHeld = false;
         SetCrouched(false);
     }
 
@@ -115,6 +141,10 @@ public class QuakeMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        // Releasing the key only requests standing; it happens once there is room.
+        if (_isCrouched && !_crouchHeld && CanStandUp())
+            SetCrouched(false);
+
         UpdateGroundState();
 
         Vector3 velocity = _rigidBody.linearVelocity;
@@ -131,9 +161,11 @@ public class QuakeMovement : MonoBehaviour
             velocity = Accelerate(velocity, wishDir, _airAcceleration, speedLimit: airLimit);
         }
 
+        StepUp(velocity);
         velocity = TryJump(velocity);
 
         _rigidBody.linearVelocity = velocity;
+        _speed = _rigidBody.linearVelocity.ProjectOntoPlane(transform.up).magnitude;
 
         // Stops the player sliding down walkable slopes.
         _rigidBody.useGravity = !(IsOnWalkableGround && _slopeAngle > 0f);
@@ -141,8 +173,13 @@ public class QuakeMovement : MonoBehaviour
 
     // ---------------------------------------------------------------- Input
 
-    private void OnCrouchPerformed(InputAction.CallbackContext _) => SetCrouched(true);
-    private void OnCrouchCanceled(InputAction.CallbackContext _) => SetCrouched(false);
+    private void OnCrouchPerformed(InputAction.CallbackContext _)
+    {
+        _crouchHeld = true;
+        SetCrouched(true);
+    }
+
+    private void OnCrouchCanceled(InputAction.CallbackContext _) => _crouchHeld = false;
 
     private void SetCrouched(bool crouched)
     {
@@ -156,6 +193,42 @@ public class QuakeMovement : MonoBehaviour
         // Shift the center down by half the lost height so the feet stay put.
         _collider.height = height;
         _collider.center = _standingCenter + Vector3.down * (heightLost * 0.5f);
+
+        // The top of the capsule drops by the full lost height, so the eyes do too.
+        if (_eyes != null)
+            _eyes.localPosition = _standingEyesLocal + Vector3.down * heightLost;
+
+        // The center marker sits in the middle of the capsule, so it drops by half.
+        if (_center != null)
+            _center.localPosition = _standingCenterMarkerLocal + Vector3.down * (heightLost * 0.5f);
+    }
+
+    /// <summary>True if a standing capsule fits at the current feet position.</summary>
+    private bool CanStandUp()
+    {
+        const float skin = 0.005f;
+
+        Bounds bounds = _collider.bounds;
+        float feetY = bounds.min.y;
+        float radius = _collider.radius;
+
+        // Same capsule as standing, shrunk by a skin so touching the floor or walls doesn't count.
+        Vector3 bottom = new Vector3(bounds.center.x, feetY + radius + skin, bounds.center.z);
+        Vector3 top = new Vector3(bounds.center.x, feetY + _standingHeight - radius, bounds.center.z);
+
+        int count = Physics.OverlapCapsuleNonAlloc(
+            bottom, top, radius - skin, _standUpBuffer, _groundLayers, QueryTriggerInteraction.Ignore);
+
+        for (int i = 0; i < count; i++)
+        {
+            Collider other = _standUpBuffer[i];
+            if (other != _collider && other.attachedRigidbody != _rigidBody) {
+                Debug.Log($"something {other.gameObject.name}");
+                return false;
+            }
+        }
+        
+        return true;
     }
 
     /// <summary>World-space horizontal wish direction (unit length or zero) and the speed we want to reach.</summary>
@@ -236,6 +309,58 @@ public class QuakeMovement : MonoBehaviour
         _lastJumpPressTime = float.NegativeInfinity;
         velocity.y = _jumpForce;
         return velocity;
+    }
+
+    /// <summary>
+    /// Lifts the body onto a low ledge in the direction of travel before the physics step
+    /// can stop it against the riser. Uses three probes: a low ray (is there an obstacle?),
+    /// a high ray (is it too tall?) and a downward ray (how high is the top?).
+    /// </summary>
+    private void StepUp(Vector3 velocity)
+    {
+        const float probeSkin = 0.05f;
+
+        if (!IsOnWalkableGround)
+            return;
+
+        Vector3 horizontalVelocity = HorizontalOf(velocity);
+        if (horizontalVelocity.sqrMagnitude < 0.01f)
+            return;
+
+        Vector3 dir = horizontalVelocity.normalized;
+        float reach = _collider.radius + _stepProbeDistance;
+
+        Bounds bounds = _collider.bounds;
+        Vector3 feet = new Vector3(bounds.center.x, bounds.min.y, bounds.center.z);
+
+        // 1. Something in the way at foot level?
+        if (!Physics.Raycast(feet + Vector3.up * probeSkin, dir, out RaycastHit lowHit, reach,
+                _groundLayers, QueryTriggerInteraction.Ignore))
+            return;
+
+        // A walkable slope is not a step.
+        if (Vector3.Angle(Vector3.up, lowHit.normal) <= _slopeLimit)
+            return;
+
+        // 2. Still blocked at max step height? Then it's a wall.
+        if (Physics.Raycast(feet + Vector3.up * (_stepHeight + probeSkin), dir, reach,
+                _groundLayers, QueryTriggerInteraction.Ignore))
+            return;
+
+        // 3. Find the top of the step, just past the riser.
+        Vector3 topProbe = lowHit.point + dir * probeSkin;
+        topProbe.y = feet.y + _stepHeight + probeSkin;
+
+        if (!Physics.Raycast(topProbe, Vector3.down, out RaycastHit topHit, _stepHeight + probeSkin,
+                _groundLayers, QueryTriggerInteraction.Ignore))
+            return;
+
+        if (Vector3.Angle(Vector3.up, topHit.normal) > _slopeLimit)
+            return;
+
+        float rise = topHit.point.y - feet.y;
+        if (rise > 0.01f && rise <= _stepHeight)
+            _rigidBody.position += Vector3.up * (rise + GroundProbeSkin);
     }
 
     private static Vector3 HorizontalOf(Vector3 v) => new Vector3(v.x, 0f, v.z);
