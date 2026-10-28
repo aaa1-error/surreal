@@ -125,9 +125,9 @@ public class WeaponController : MonoBehaviour
     }
 
     /// <summary>Adds reserve ammo. Returns false if the player was already full of that type.</summary>
-    public bool TryAddAmmo(AmmoType type, int amount)
+    public bool TryAddAmmo(AmmoTypeData type, int amount)
     {
-        if (type == AmmoType.None || _ammo == null)
+        if (type == null || _ammo == null)
             return false;
 
         return _ammo.Add(type, amount) > 0;

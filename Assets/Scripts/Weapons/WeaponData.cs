@@ -28,7 +28,8 @@ public class WeaponData : ScriptableObject
     public int slot = 1;
 
     [Header("Ammo")]
-    public AmmoType ammoType = AmmoType.Pistol9mm;
+    [Tooltip("Leave empty for weapons that use no ammo (crowbar).")]
+    public AmmoTypeData ammoType;
     [Tooltip("0 for weapons that use no ammo (crowbar).")]
     public int clipSize = 17;
 

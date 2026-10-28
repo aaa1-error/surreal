@@ -45,7 +45,7 @@ public abstract class Weapon : MonoBehaviour
     public string DisplayName => _data.displayName;
     public int Slot => _data.slot;
     public WeaponData Data => _data;
-    public bool UsesAmmo => _data.ammoType != AmmoType.None;
+    public bool UsesAmmo => _data.ammoType != null;
     public int AmmoInClip { get; protected set; }
     public int AmmoReserve => UsesAmmo ? _ammo.Get(_data.ammoType) : 0;
     public bool IsHolstered => State == WeaponState.Holstered;
@@ -97,6 +97,10 @@ public abstract class Weapon : MonoBehaviour
             enabled = false;
             return;
         }
+
+        if (_data.clipSize > 0 && _data.ammoType == null)
+            Debug.LogWarning($"{name}: '{_data.displayName}' has a clip size but no Ammo Type asset, so it will " +
+                             "behave as if it used no ammo. Assign one in the WeaponData.", this);
 
         AmmoInClip = _data.clipSize;
     }
