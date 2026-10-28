@@ -118,3 +118,7 @@ InitTestScene*.unity*
 .vsconfig/
 
 linux_build
+
+*.exr
+*.blend
+*.blend1
