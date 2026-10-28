@@ -120,5 +120,6 @@ InitTestScene*.unity*
 linux_build
 
 *.exr
+Lightmap-*_comp_dir.*
 *.blend
 *.blend1
