@@ -440,6 +440,7 @@ MonoBehaviour:
   - {fileID: 683471980}
   - {fileID: 1169226459}
   - {fileID: 294442393}
+  - {fileID: 1242085184}
   _lockedWeapons: []
   _ammo: {fileID: 110264761}
   _switchToNewWeapons: 1
@@ -623,7 +624,7 @@ MonoBehaviour:
   _hitLayers:
     serializedVersion: 2
     m_Bits: 23
-  _logEvents: 1
+  _logEvents: 0
 --- !u!1 &338270709
 GameObject:
   m_ObjectHideFlags: 0
@@ -952,7 +953,7 @@ MonoBehaviour:
   _hitLayers:
     serializedVersion: 2
     m_Bits: 23
-  _logEvents: 1
+  _logEvents: 0
 --- !u!1 &712178518
 GameObject:
   m_ObjectHideFlags: 0
@@ -1785,7 +1786,7 @@ MonoBehaviour:
   _hitLayers:
     serializedVersion: 2
     m_Bits: 23
-  _logEvents: 1
+  _logEvents: 0
 --- !u!1 &1200618588
 GameObject:
   m_ObjectHideFlags: 0
@@ -1818,6 +1819,7 @@ Transform:
   - {fileID: 683471979}
   - {fileID: 1169226458}
   - {fileID: 294442392}
+  - {fileID: 1242085183}
   m_Father: {fileID: 110264757}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1219228619
@@ -1925,6 +1927,57 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!1 &1242085182
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1242085183}
+  - component: {fileID: 1242085184}
+  m_Layer: 3
+  m_Name: saiga
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1242085183
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1242085182}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.375, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1200618589}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1242085184
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1242085182}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1a64d570a94b6745a75ffb71a80ae51, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HitscanWeapon
+  _data: {fileID: 11400000, guid: ac96d83807ed28c49a3b102176d3e4a6, type: 2}
+  _aimOrigin: {fileID: 1360656623}
+  _ammo: {fileID: 110264761}
+  _hitLayers:
+    serializedVersion: 2
+    m_Bits: 23
+  _logEvents: 0
 --- !u!1 &1340347900
 GameObject:
   m_ObjectHideFlags: 0

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: shotgun
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
   displayName: Shotgun
-  slot: 3
+  slot: 2
   ammoType: {fileID: 11400000, guid: a9905b325f18cb34393babbf5750f538, type: 2}
   clipSize: 12
   drawTime: 0.8

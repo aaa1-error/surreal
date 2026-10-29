@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: mp5
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
   displayName: MP5
-  slot: 1
+  slot: 2
   ammoType: {fileID: 11400000, guid: 6ecbe9b93a3fb014ba4017c76110e322, type: 2}
   clipSize: 50
   drawTime: 0.8
