@@ -222,12 +222,13 @@ public class QuakeMovement : MonoBehaviour
         for (int i = 0; i < count; i++)
         {
             Collider other = _standUpBuffer[i];
-            if (other != _collider && other.attachedRigidbody != _rigidBody) {
+            if (other != _collider && other.attachedRigidbody != _rigidBody)
+            {
                 Debug.Log($"something {other.gameObject.name}");
                 return false;
             }
         }
-        
+
         return true;
     }
 
