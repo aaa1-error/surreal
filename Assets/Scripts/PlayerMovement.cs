@@ -364,5 +364,13 @@ public class QuakeMovement : MonoBehaviour
             _rigidBody.position += Vector3.up * (rise + GroundProbeSkin);
     }
 
+    /// <summary>
+    /// Cancels player's velocity.
+    /// </summary>
+    public void CancelVelocity()
+    {
+        _rigidBody.linearVelocity = Vector3.zero;
+    }
+
     private static Vector3 HorizontalOf(Vector3 v) => new Vector3(v.x, 0f, v.z);
 }
