@@ -4,7 +4,7 @@ using UnityEngine;
 public class UnlockCursor : MonoBehaviour
 {
 
-    private void OnStart()
+    private void Start()
     {
         Cursor.lockState = CursorLockMode.None;
     }
