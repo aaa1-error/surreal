@@ -16,6 +16,8 @@ public struct FireSettings
     public int ammoCost;
     [Tooltip("Rays per shot. 1 for a pistol, more for a shotgun.")]
     public int pellets;
+    [Tooltip("Played when this mode fires. One is picked at random each shot. For the crowbar, this is the swing sound.")]
+    public AudioClip[] fireSounds;
 }
 
 /// <summary>One asset per weapon. Create via Assets > Create > Weapons > Weapon Data.</summary>

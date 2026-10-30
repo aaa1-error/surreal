@@ -12,6 +12,11 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: idk
+    second: {fileID: 2100000, guid: 3736ea59b69362f44864f12238280436, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: pillar
     second: {fileID: 2100000, guid: 7969b0a0684eb6849a1050bd8336d19a, type: 2}
   - first:

@@ -32,6 +32,13 @@ public abstract class Weapon : MonoBehaviour
     [SerializeField] protected LayerMask _hitLayers = ~0;
     [SerializeField] private bool _logEvents = true;
 
+    [Header("Sound")]
+    [Tooltip("Plays the shot sounds. Optional: a 2D AudioSource is added to this object if left empty.")]
+    [SerializeField] private AudioSource _shotSource;
+    [Tooltip("Random pitch change per shot so repeated shots do not sound identical.")]
+    [Range(0f, 0.2f)]
+    [SerializeField] private float _pitchVariation = 0.04f;
+
     private bool _primaryHeld;
     private bool _secondaryHeld;
     private bool _primaryWasHeld;
@@ -101,6 +108,13 @@ public abstract class Weapon : MonoBehaviour
         if (_data.clipSize > 0 && _data.ammoType == null)
             Debug.LogWarning($"{name}: '{_data.displayName}' has a clip size but no Ammo Type asset, so it will " +
                              "behave as if it used no ammo. Assign one in the WeaponData.", this);
+
+        if (_shotSource == null)
+        {
+            _shotSource = gameObject.AddComponent<AudioSource>();
+            _shotSource.playOnAwake = false;
+            _shotSource.spatialBlend = 0f;  // 2D: it is the player's own weapon
+        }
 
         AmmoInClip = _data.clipSize;
     }
@@ -230,6 +244,7 @@ public abstract class Weapon : MonoBehaviour
         SetState(WeaponState.Firing, settings.interval);
         Log($"Fired {mode} ({AmmoInClip}/{_data.clipSize} in clip)");
         OnFire(mode, settings);
+        PlayShot(settings.fireSounds);
     }
 
     // ---------------------------------------------------------------- Reloading (virtual so weapons can change it)
@@ -266,6 +281,22 @@ public abstract class Weapon : MonoBehaviour
 
     /// <summary>Runs every frame while the weapon is out (not holstered). For delayed effects like a melee swing.</summary>
     protected virtual void Tick() { }
+
+    // ---------------------------------------------------------------- Sound
+
+    /// <summary>Plays a random clip from the list as an overlapping one-shot. Safe with null or empty lists.</summary>
+    private void PlayShot(AudioClip[] clips)
+    {
+        if (clips == null || clips.Length == 0 || _shotSource == null)
+            return;
+
+        AudioClip clip = clips[Random.Range(0, clips.Length)];
+        if (clip == null)
+            return;
+
+        _shotSource.pitch = 1f + Random.Range(-_pitchVariation, _pitchVariation);
+        _shotSource.PlayOneShot(clip);
+    }
 
     protected void Log(string message)
     {

@@ -29,6 +29,8 @@ MonoBehaviour:
     spreadDegrees: 5
     ammoCost: 1
     pellets: 12
+    fireSounds:
+    - {fileID: 8300000, guid: 288a60bffed490e46835e6f1866f2475, type: 3}
   secondary:
     available: 1
     damage: 4
@@ -36,3 +38,4 @@ MonoBehaviour:
     spreadDegrees: 8
     ammoCost: 2
     pellets: 24
+    fireSounds: []
