@@ -130,6 +130,7 @@ GameObject:
   - component: {fileID: 58781973}
   - component: {fileID: 58781975}
   - component: {fileID: 58781974}
+  - component: {fileID: 58781977}
   - component: {fileID: 58781976}
   m_Layer: 5
   m_Name: weapon
@@ -266,10 +267,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 58781972}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f9bff5021d2741840934de3c9d10b82d, type: 3}
+  m_Script: {fileID: 11500000, guid: 23055dab6b0f53e45b652b3bf607ca32, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::WeaponDisplay
-  _weaponController: {fileID: 110264762}
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponNameHUD
+  _weapons: {fileID: 110264762}
+  _view: {fileID: 58781977}
+--- !u!114 &58781977
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 58781972}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 979410057898bdc44bb2bd8258dff3e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TextMeterView
 --- !u!1 &110264754
 GameObject:
   m_ObjectHideFlags: 0
@@ -2780,6 +2794,7 @@ GameObject:
   - component: {fileID: 436554130}
   - component: {fileID: 436554132}
   - component: {fileID: 436554131}
+  - component: {fileID: 436554134}
   - component: {fileID: 436554133}
   m_Layer: 5
   m_Name: ammo
@@ -2916,10 +2931,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 436554129}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca76cc34f693a364fbbc82d2311d4fef, type: 3}
+  m_Script: {fileID: 11500000, guid: 979410057898bdc44bb2bd8258dff3e4, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::AmmoDisplay
-  _w: {fileID: 110264762}
+  m_EditorClassIdentifier: Assembly-CSharp::TextMeterView
+--- !u!114 &436554134
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 436554129}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 583f8e11c53909042a42d4ab4893c835, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AmmoHUD
+  _weapons: {fileID: 110264762}
+  _view: {fileID: 436554133}
 --- !u!1 &577334316
 GameObject:
   m_ObjectHideFlags: 0
@@ -3535,6 +3563,7 @@ GameObject:
   - component: {fileID: 712178519}
   - component: {fileID: 712178521}
   - component: {fileID: 712178520}
+  - component: {fileID: 712178523}
   - component: {fileID: 712178522}
   m_Layer: 5
   m_Name: speedometer
@@ -3675,6 +3704,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Speedometer
   _player: {fileID: 110264758}
+  _view: {fileID: 712178523}
+--- !u!114 &712178523
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 712178518}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 979410057898bdc44bb2bd8258dff3e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TextMeterView
 --- !u!1 &771542125
 GameObject:
   m_ObjectHideFlags: 0
@@ -9055,6 +9097,7 @@ GameObject:
   - component: {fileID: 1550410565}
   - component: {fileID: 1550410567}
   - component: {fileID: 1550410566}
+  - component: {fileID: 1550410569}
   - component: {fileID: 1550410568}
   m_Layer: 5
   m_Name: health
@@ -9191,10 +9234,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 1550410564}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 439b2f7aaf1e3214a870f3112d938a25, type: 3}
+  m_Script: {fileID: 11500000, guid: a066af665b9d08242bb0a117bf649023, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HealthArmorDisplay
+  m_EditorClassIdentifier: Assembly-CSharp::HealthArmorHUD
   _player: {fileID: 110264763}
+  _view: {fileID: 1550410569}
+--- !u!114 &1550410569
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1550410564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 979410057898bdc44bb2bd8258dff3e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TextMeterView
 --- !u!1 &1557073849
 GameObject:
   m_ObjectHideFlags: 0

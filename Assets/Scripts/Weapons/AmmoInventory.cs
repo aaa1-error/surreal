@@ -21,6 +21,9 @@ public class AmmoInventory : MonoBehaviour
 
     private readonly Dictionary<AmmoTypeData, int> _amounts = new Dictionary<AmmoTypeData, int>();
 
+    /// <summary>Raised with the ammo type whose reserve count just changed.</summary>
+    public event Action<AmmoTypeData> Changed;
+
     private void Awake()
     {
         if (_startingAmmo == null)
@@ -51,7 +54,10 @@ public class AmmoInventory : MonoBehaviour
         int taken = Mathf.Min(wanted, have);
 
         if (taken > 0)
+        {
             _amounts[type] = have - taken;
+            Changed?.Invoke(type);
+        }
 
         return taken;
     }
@@ -66,7 +72,10 @@ public class AmmoInventory : MonoBehaviour
         int added = Mathf.Clamp(type.maxCarry - have, 0, amount);
 
         if (added > 0)
+        {
             _amounts[type] = have + added;
+            Changed?.Invoke(type);
+        }
 
         return added;
     }

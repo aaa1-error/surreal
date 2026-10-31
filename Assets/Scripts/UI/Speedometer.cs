@@ -1,15 +1,9 @@
 using UnityEngine;
 
-//[RequireComponent(typeof(TextMeshPro))]
-public class Speedometer : Meter
-{   
-    [SerializeField]
-    private QuakeMovement _player;
+public class Speedometer : MonoBehaviour
+{
+    [SerializeField] private QuakeMovement _player;
+    [SerializeField] private TextMeterView _view;
 
-
-    private void Update()
-    {
-        float rounded = Mathf.Round(_player.HorizontalSpeed * 100.0f); 
-        _uiElement.SetText(rounded.ToString());
-    }
+    private void Update() => _view.SetText(Mathf.Round(_player.HorizontalSpeed * 100f).ToString());
 }

@@ -16,7 +16,7 @@ public class StupidKillTrigger : MonoBehaviour
         {
             Amount = 9999f
         };
-        
+
         player.TakeDamage(d);
     }
 }

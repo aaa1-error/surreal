@@ -22,7 +22,7 @@ public enum FireMode
 /// optionally, how reloading and per-frame work behave.
 /// All timing uses "state ends at" timestamps instead of coroutines, so it is easy to debug.
 /// </summary>
-public abstract class Weapon : MonoBehaviour
+public abstract class Weapon : MonoBehaviour, IWeaponStatus
 {
     [SerializeField] protected WeaponData _data;
     [Tooltip("Where shots start and which way they point. Use the Main Camera.")]
@@ -53,7 +53,20 @@ public abstract class Weapon : MonoBehaviour
     public int Slot => _data.slot;
     public WeaponData Data => _data;
     public bool UsesAmmo => _data.ammoType != null;
-    public int AmmoInClip { get; protected set; }
+    private int _ammoInClip;
+    public int AmmoInClip
+    {
+        get => _ammoInClip;
+        protected set
+        {
+            if (_ammoInClip == value) return;
+            _ammoInClip = value;
+            Changed?.Invoke();
+        }
+    }
+
+    /// <summary>Raised when the clip or the reserve ammo of this weapon's type changes.</summary>
+    public event System.Action Changed;
     public int AmmoReserve => UsesAmmo ? _ammo.Get(_data.ammoType) : 0;
     public bool IsHolstered => State == WeaponState.Holstered;
     public bool IsReloading => State == WeaponState.Reloading;
@@ -116,7 +129,23 @@ public abstract class Weapon : MonoBehaviour
             _shotSource.spatialBlend = 0f;  // 2D: it is the player's own weapon
         }
 
+        if (UsesAmmo)
+            _ammo.Changed += OnInventoryChanged;
+
         AmmoInClip = _data.clipSize;
+    }
+
+    private void OnInventoryChanged(AmmoTypeData type)
+    {
+        if (type == _data.ammoType)
+            Changed?.Invoke();
+    }
+
+    /// <summary>Subclasses that override this must call base.OnDestroy().</summary>
+    protected virtual void OnDestroy()
+    {
+        if (_ammo != null)
+            _ammo.Changed -= OnInventoryChanged;
     }
 
     private void Update()

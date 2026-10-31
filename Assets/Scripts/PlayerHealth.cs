@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 /// Health + suit armor for the player. Half-Life style armor: armor soaks a share of
 /// each hit and is consumed doing so; whatever it can't cover falls through to health.
 /// </summary>
-public class PlayerHealth : MonoBehaviour, IDamageable
+public class PlayerHealth : MonoBehaviour, IDamageable, IHealthSource
 {
     [Header("Health")]
     [SerializeField] private float maxHealth = 100f;
@@ -31,6 +31,9 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     [Header("Events")]
     public UnityEvent<DamageInfo> OnDamaged;
     public UnityEvent OnDeath;
+
+    /// <summary>Raised whenever Health or Armor changes. Call it from any future healing/armor pickup too.</summary>
+    public event Action Changed;
 
     public float Health { get; private set; }
     public float Armor { get; private set; }
@@ -72,6 +75,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         }
 
         Health = Mathf.Max(0f, Health - healthDamage);
+        Changed?.Invoke();
         OnDamaged?.Invoke(info);
 
         if (Health <= 0f) Die();

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -7,7 +8,7 @@ using UnityEngine.InputSystem;
 /// the current weapon holsters first, then the new one draws. Input is ignored in between.
 /// Also tracks which weapons the player owns, so weapons can be picked up during play.
 /// </summary>
-public class WeaponController : MonoBehaviour
+public class WeaponController : MonoBehaviour, IWeaponProvider
 {
     [Header("Weapons")]
     [Tooltip("Weapons the player starts with. The first one is drawn at the start.")]
@@ -36,6 +37,8 @@ public class WeaponController : MonoBehaviour
     private Weapon _pending;  // weapon we are switching to
 
     public Weapon CurrentWeapon => _current;
+    IWeaponStatus IWeaponProvider.CurrentWeapon => _current;
+    public event Action WeaponChanged;
     public bool IsSwitching => _pending != null;
     public IReadOnlyList<Weapon> OwnedWeapons => _owned;
 
@@ -161,6 +164,7 @@ public class WeaponController : MonoBehaviour
         _current = weapon;
         _pending = null;
         weapon.Draw();
+        WeaponChanged?.Invoke();
     }
 
     private void FinishPendingSwitch()
